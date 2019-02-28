@@ -22,6 +22,17 @@ public class GetAccessToken implements CommandLineRunner {
     static final String appSecret = Constant.APPSECRET;
     @Override
     public void run(String... args) {
+        /*使用线程池开启线程*/
+        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder();
+        ExecutorService singleThreadPool = new ThreadPoolExecutor(1, 1,
+                0L, TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<>(1024), namedThreadFactory, new ThreadPoolExecutor.AbortPolicy());
+       ((ThreadPoolExecutor) singleThreadPool).prestartAllCoreThreads();
+        MyTask task = new MyTask();
+        singleThreadPool.execute(task);
+        singleThreadPool.shutdown();
+
+        /*
         //开启一个新的线程
         new Thread(() -> {
             while (true) {
@@ -51,7 +62,7 @@ public class GetAccessToken implements CommandLineRunner {
             }
 
         }).start();
-
+        */
     }
 
     /**
@@ -78,5 +89,46 @@ public class GetAccessToken implements CommandLineRunner {
 
 
 
+    private class ThreadFactoryBuilder implements  ThreadFactory {
 
+        private final AtomicInteger mThreadNum = new AtomicInteger(1);
+
+        @Override
+        public Thread newThread(Runnable r) {
+            Thread t = new Thread(r, "my-thread-" + mThreadNum.getAndIncrement());
+            System.out.println(t.getName() + " has been created，prepare to get AccessToken");
+            return t;
+        }
+    }
+
+    private static class MyTask implements Runnable{
+
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    //获取accessToken
+                    AccessTokenInfo.accessToken = getAccessToken(appId, appSecret);
+                    //获取成功
+                    if (AccessTokenInfo.accessToken != null) {
+                        //获取到access_token 休眠7000秒,大约2个小时左右
+                        Thread.sleep(7000 * 1000);
+                        //10秒钟获取一次
+                        // Thread.sleep(10 * 1000);
+                    } else {
+                        Thread.sleep(1000 * 3);
+                    }
+                } catch (Exception e) {
+                    System.out.println("发生异常：" + e.getMessage());
+                    e.printStackTrace();
+                    try {
+                        //发生异常休眠1秒
+                        Thread.sleep(1000 * 10);
+                    } catch (Exception e1) {
+
+                    }
+                }
+            }
+        }
+    }
 }
