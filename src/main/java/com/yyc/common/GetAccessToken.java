@@ -22,9 +22,6 @@ public class GetAccessToken implements CommandLineRunner {
     static final String appSecret = Constant.APPSECRET;
     @Override
     public void run(String... args) {
-
-
-
         //开启一个新的线程
         new Thread(() -> {
             while (true) {
@@ -54,7 +51,7 @@ public class GetAccessToken implements CommandLineRunner {
             }
 
         }).start();
-        
+
     }
 
     /**
