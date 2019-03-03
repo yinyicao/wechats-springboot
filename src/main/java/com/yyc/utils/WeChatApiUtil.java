@@ -230,7 +230,8 @@ public class WeChatApiUtil {
      * @return
      */
     public static JSONObject uploadMedia(String filePath,String type){
-        File f = new File(filePath); // 获取本地文件
+        // 获取本地文件
+        File f = new File(filePath);
         String token = WeChatApiUtil.getToken(APP_ID, APP_SECRET);
         JSONObject jsonObject = uploadMedia(f, token, type);
         return jsonObject;
@@ -301,26 +302,13 @@ public class WeChatApiUtil {
         return response;
     }
 
-    public static void main(String[] args) throws Exception{
-//        //媒体文件路径
-////        String filePath = "H:\\Workspaces\\IntelliJ IDEA\\wechats\\web\\media\\image\\20170614.jpg";
-////        String filePath = "H:\\Workspaces\\IntelliJ IDEA\\wechats\\web\\media\\voice\\voice.mp3";
-//        String filePath = "D:\\Workspaces\\IntelliJ IDEA\\wechats\\web\\media\\video\\小苹果.mp4";
-//        //媒体文件类型
-////        String type = "image";
-////        String type = "voice";
-//        String type = "video";
-//        JSONObject uploadResult = uploadMedia(filePath, type);
-//        //{"media_id":"dSQCiEHYB-pgi7ib5KpeoFlqpg09J31H28rex6xKgwWrln3HY0BTsoxnRV-xC_SQ","created_at":1455520569,"type":"image"}
-//        System.out.println("上传成功："+uploadResult.toString());
-//
-//        //下载刚刚上传的图片    以id命名
-////        String media_id = uploadResult.getString("media_id");
-////        File file = downloadMedia("D:/" + media_id + ".png", media_id);
-////        System.out.println(file.getName());
-
-        //自定义公众号菜单（暂时由于accessToken没有保存，需要手动获取）
-        String path = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token="+ "18_LdGlOZeJStBteUeXgYzV6qedOBbrL9pZXUnrARTEhXAYuKbDOkKn75piYyyw-EKvibUbcyDy_78_eTB0u16AKOOga8PyzXOhlrWgXNZzOXyuEs1MnwdN2kLD_uhY31E-WKPNHpbgd-IkQ1ZTVYFdAEANQX";
+    /**
+     * 自定义公众号底部菜单
+     * @param accessToken accessToken目前需要手动设置
+     * @return 设置后返回的json串
+     */
+    public static String setMenu(String accessToken){
+        String path = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token="+accessToken ;
         String method = "POST";
         String body = "{\n" +
                 "\t\"button\": [{\n" +
@@ -351,8 +339,8 @@ public class WeChatApiUtil {
                 "\t\t\t\"name\": \"园区服务\",\n" +
                 "\t\t\t\"sub_button\": [{\n" +
                 "\t\t\t\t\t\"type\": \"view\",\n" +
-                "\t\t\t\t\t\"name\": \"搜索\",\n" +
-                "\t\t\t\t\t\"url\": \"http://www.soso.com/\"\n" +
+                "\t\t\t\t\t\"name\": \"商家简介\",\n" +
+                "\t\t\t\t\t\"url\": \"http://yychf.vicp.io/MerchantIntroduction.html\"\n" +
                 "\t\t\t\t},\n" +
                 "\t\t\t\t{\n" +
                 "\t\t\t\t\t\"type\": \"miniprogram\",\n" +
@@ -386,18 +374,44 @@ public class WeChatApiUtil {
                 "\t]\n" +
                 "}";
         String res = httpsRequestToString(path, method, body);
-        System.out.println(res);
+        return res;
+    }
+
+    public static void main(String[] args) throws Exception{
+//        //媒体文件路径
+////        String filePath = "H:\\Workspaces\\IntelliJ IDEA\\wechats\\web\\media\\image\\20170614.jpg";
+////        String filePath = "H:\\Workspaces\\IntelliJ IDEA\\wechats\\web\\media\\voice\\voice.mp3";
+//        String filePath = "D:\\Workspaces\\IntelliJ IDEA\\wechats\\web\\media\\video\\小苹果.mp4";
+//        //媒体文件类型
+////        String type = "image";
+////        String type = "voice";
+//        String type = "video";
+//        JSONObject uploadResult = uploadMedia(filePath, type);
+//        //{"media_id":"dSQCiEHYB-pgi7ib5KpeoFlqpg09J31H28rex6xKgwWrln3HY0BTsoxnRV-xC_SQ","created_at":1455520569,"type":"image"}
+//        System.out.println("上传成功："+uploadResult.toString());
+//
+//        //下载刚刚上传的图片    以id命名
+////        String media_id = uploadResult.getString("media_id");
+////        File file = downloadMedia("D:/" + media_id + ".png", media_id);
+////        System.out.println(file.getName());
+
+        //自定义公众号菜单（暂时由于accessToken没有保存，需要手动获取）
+        String accessToken = "19_J2mVXtX3eKlbmi_o4_SugMO1NYhK7NfhHD9RvOFcEQMtUZ6lS3JnPg1AI64_LVDV9Xt5iD6rywOt0WgG2SScg32c0IbDZjwKt72Ncg3nwb2AyGtZCJsZl0hqQXcAFMiAGADIP";
+        System.out.println(setMenu(accessToken));
     }
 
 
 
     private static class JEEWeiXinX509TrustManager implements X509TrustManager {
+        @Override
         public void checkClientTrusted(X509Certificate[] chain, String authType) {
         }
 
+        @Override
         public void checkServerTrusted(X509Certificate[] chain, String authType) {
         }
 
+        @Override
         public X509Certificate[] getAcceptedIssuers() {
             return null;
         }
